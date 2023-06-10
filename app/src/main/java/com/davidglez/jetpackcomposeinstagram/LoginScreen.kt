@@ -1,6 +1,7 @@
 package com.davidglez.jetpackcomposeinstagram
 
 import android.app.Activity
+import android.util.Patterns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,10 +20,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -101,9 +105,15 @@ fun Body(modifier: Modifier) {
     Column(modifier = modifier) {
         ImageLogo(Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(16.dp))
-        Email(email) { email = it }
+        Email(email) {
+            email = it
+            isLoginEnable = enabledLogin(email, password)
+        }
         Spacer(modifier = Modifier.size(4.dp))
-        Password(password) { password = it }
+        Password(password) {
+            password = it
+            isLoginEnable = enabledLogin(email, password)
+        }
         Spacer(modifier = Modifier.size(8.dp))
         ForgotPassword(Modifier.align(Alignment.End))
         Spacer(modifier = Modifier.size(16.dp))
@@ -164,10 +174,25 @@ fun LoginDivider() {
 
 @Composable
 fun LoginButton(loginEnable: Boolean) {
-    Button(onClick = {}, enabled = loginEnable, modifier = Modifier.fillMaxWidth()) {
+    Button(
+        onClick = {},
+        enabled = loginEnable,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFF4EA8E9)),
+        colors = ButtonDefaults.buttonColors(
+            //backgroundColor = Color(0xFF4EA8E9),
+            //disableBackgroundColor = Color(0xFF4EA8E9)
+            contentColor = Color.White,
+            disabledContentColor = Color.White
+        ),
+    ) {
         Text(text = "Log In")
     }
 }
+
+fun enabledLogin(email: String, password: String): Boolean =
+    Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 6
 
 @Composable
 fun ForgotPassword(modifier: Modifier) {
@@ -193,12 +218,13 @@ fun Password(password: String, onTextChanged: (String) -> Unit) {
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         trailingIcon = {
             val imagen = if (passwordVisibility) {
-                Icons.Filled.Email
+                R.drawable.ic_visibility_on
             } else {
-                Icons.Filled.Close
+                R.drawable.ic_visibility_off
+
             }
             IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                Icon(imageVector = imagen, contentDescription = "show password")
+                Icon(painterResource(id = imagen), contentDescription = "show password")
             }
         },
         colors = TextFieldDefaults.textFieldColors(
